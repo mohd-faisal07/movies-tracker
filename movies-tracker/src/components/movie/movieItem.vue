@@ -1,6 +1,12 @@
 <template>
+  <base-dialog :show="!!error" title="Error while adding items!" @close="handleClose"
+    ><p>{{ error }}</p></base-dialog
+  >
   <section v-if="currentMovie.imdbID" class="movie-item">
-    <div class="movie-container">
+    <div v-if="isLoader">
+      <base-spinner></base-spinner>
+    </div>
+    <div class="movie-container" v-else>
       <div class="img-div">
         <img :src="currentMovie.Poster" class="movie-poster" />
       </div>
@@ -14,8 +20,8 @@
         <p>Genre : {{ currentMovie.Genre }}</p>
         <p>Description : {{ currentMovie.Plot }}</p>
         <div class="buttons">
-          <base-button>Add to favorites</base-button>
-          <base-button>Add to watched</base-button>
+          <base-button @click="handleFavorite(currentMovie.imdbID)">Add to favorites</base-button>
+          <base-button @click="handleWatched(currentMovie.imdbID)">Add to watched</base-button>
         </div>
       </div>
     </div>
@@ -29,9 +35,57 @@
 </template>
 <script>
 export default {
+  data() {
+    return {
+      error: null,
+    }
+  },
+
   computed: {
     currentMovie() {
-      return this.$store.state.currentMovie
+      return this.$store.getters.currentMovie
+    },
+    isLoader() {
+      return this.$store.getters.isLoading
+    },
+  },
+
+  methods: {
+    handleFavorite(id) {
+      try {
+        this.$store.dispatch('setterIsLoading', true)
+        if (!this.$store.getters.favorites.find((imdbid) => imdbid.imdbID === id)) {
+          this.$store.state.favorites.push(this.$store.state.currentMovie)
+          console.log('favorites', this.$store.getters.favorites)
+          localStorage.setItem('favorites', JSON.stringify(this.$store.state.favorites))
+        } else {
+          const error = 'Item is already present in the list!'
+          this.error = error
+        }
+      } catch (err) {
+        throw new Error(err.message || 'error while adding to the list list')
+      }
+      this.$router.replace('/favorites')
+      this.$store.dispatch('setterIsLoading', false)
+    },
+    handleWatched(id) {
+      try {
+        if (!this.$store.getters.watched.find((imdbid) => imdbid.imdbID === id)) {
+          this.$store.state.watched.push(this.$store.state.currentMovie)
+          console.log(this.$store.getters.watched)
+          localStorage.setItem('watched', JSON.stringify(this.$store.state.watched))
+        } else {
+          const error = 'Item is already present in the list!'
+          this.error = error
+        }
+      } catch (err) {
+        throw new Error(err.message || 'error while adding to the list list')
+      }
+      this.$router.replace('/watched')
+      console.log('curentmovie', this.currentMovie)
+    },
+    handleClose() {
+      this.error = null
     },
   },
 }
@@ -51,8 +105,6 @@ export default {
 p {
   margin-bottom: 0.3rem;
 }
-.img-div {
-}
 .movie-poster {
   padding: 0.3rem;
   border-radius: 12px;
@@ -65,5 +117,15 @@ p {
 }
 section h2 {
   text-align: center;
+}
+
+@media (max-width: 600px) {
+  .movie-poster {
+    width: 150px;
+    height: 200px;
+  }
+  .movie-container {
+    flex-direction: column;
+  }
 }
 </style>

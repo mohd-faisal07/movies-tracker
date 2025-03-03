@@ -64,7 +64,15 @@ button:active {
   border-color: #270041;
   color: #270041;
 }
-
+.remove {
+  background-color: #d8d516;
+  color: #270041;
+  transition: all 0.3s ease-in;
+}
+.remove:hover {
+  background-color: rgb(238, 48, 48);
+  color: #d8d516;
+}
 .flat:hover,
 .flat:active,
 .outline:hover,

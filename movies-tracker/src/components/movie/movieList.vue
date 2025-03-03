@@ -1,6 +1,9 @@
 <template>
   <div class="container">
-    <ul>
+    <div v-if="isLoader">
+      <base-spinner></base-spinner>
+    </div>
+    <ul v-else>
       <li v-for="item in movies" :key="item.id" @click="handleFetch(item.id)">
         <div class="list-item">
           <div>
@@ -16,23 +19,28 @@
   </div>
 </template>
 <script>
-// console.log(movies)
 export default {
-  data() {
-    return {
-      isLoading: false,
-    }
-  },
   computed: {
     movies() {
       return this.$store.state.movies
     },
+    isLoader() {
+      return this.$store.getters.isLoading
+    },
   },
   methods: {
     async handleFetch(id) {
-      this.isLoading = true
-      await this.$store.dispatch('fetchMovieWithId', { query: id, type: 'i' })
-      this.isLoading = false
+      try {
+        this.$store.dispatch('setterIsLoading', true)
+        console.log('store', this.$store.getters.isLoading)
+        await this.$store.dispatch('fetchMovieWithId', { query: id, type: 'i' })
+      } catch (err) {
+        const error = new Error(err.message || 'something went wrong while fetching')
+        throw error
+      }
+      this.$store.dispatch('setterIsLoading', false)
+      // this.isLoading = false
+      // console.log(this.isLoading)
       // console.log('clicked the id :', id)
     },
   },
@@ -64,5 +72,6 @@ ul {
 
 li {
   list-style: none;
+  cursor: pointer;
 }
 </style>
