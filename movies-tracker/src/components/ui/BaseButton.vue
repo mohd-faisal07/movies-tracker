@@ -71,7 +71,17 @@ button:active {
 }
 .remove:hover {
   background-color: rgb(238, 48, 48);
-  color: #d8d516;
+  color: #fff;
+}
+.empty {
+  background-color: #d8d516;
+  color: #270041;
+  transition: all 0.3s ease-in;
+  min-width: 100%;
+}
+.empty:hover {
+  background-color: rgb(238, 48, 48);
+  color: #fff;
 }
 .flat:hover,
 .flat:active,

@@ -7,12 +7,13 @@ const store = createStore({
       favorites: JSON.parse(localStorage.getItem('favorites')) || [],
       watched: JSON.parse(localStorage.getItem('watched')) || [],
       isLoading: false,
+      isOpen: false,
     }
   },
   mutations: {
     setMovies(state, payload) {
       state.movies = payload
-      console.log(payload)
+      // console.log(payload)
     },
     getMovieData(state, payload) {
       state.currentMovie = payload
@@ -37,19 +38,22 @@ const store = createStore({
     isLoading(state) {
       return state.isLoading
     },
+    isOpen(state) {
+      return state.isOpen
+    },
   },
   actions: {
     async movieFetcher(context, payload) {
       try {
         const api_key = 'd2c7b4f6'
         const query = payload.query || ''
-        const response = await fetch(`http://www.omdbapi.com/?s=${query}&apikey=${api_key}`)
+        const response = await fetch(`https://www.omdbapi.com/?s=${query}&apikey=${api_key}`)
         const responseData = await response.json()
-        console.log(responseData)
-        console.log(responseData.Search)
+        // console.log(responseData)
+        // console.log(responseData.Search)
 
         if (!response.ok) {
-          console.log(responseData)
+          // console.log(responseData)
         }
 
         const moviesList = []
@@ -63,7 +67,7 @@ const store = createStore({
           moviesList.push(movie)
         }
         context.commit('setMovies', moviesList)
-        console.log(moviesList)
+        // console.log(moviesList)
       } catch (err) {
         const error = new Error(err.message || 'something went wrong during fetching!')
         throw error
@@ -73,11 +77,11 @@ const store = createStore({
       try {
         const api_key = 'd2c7b4f6'
         const query = payload.query || ''
-        const response = await fetch(`http://www.omdbapi.com/?i=${query}&apikey=${api_key}`)
+        const response = await fetch(`https://www.omdbapi.com/?i=${query}&apikey=${api_key}`)
         const responseData = await response.json()
-        console.log(responseData)
+        // console.log(responseData)
         if (!response.ok) {
-          console.log(responseData)
+          // console.log(responseData)
         }
 
         context.commit('getMovieData', responseData)

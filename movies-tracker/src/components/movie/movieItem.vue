@@ -56,8 +56,9 @@ export default {
         this.$store.dispatch('setterIsLoading', true)
         if (!this.$store.getters.favorites.find((imdbid) => imdbid.imdbID === id)) {
           this.$store.state.favorites.push(this.$store.state.currentMovie)
-          console.log('favorites', this.$store.getters.favorites)
+          // console.log('favorites', this.$store.getters.favorites)
           localStorage.setItem('favorites', JSON.stringify(this.$store.state.favorites))
+          this.$store.state.isOpen = false
         } else {
           const error = 'Item is already present in the list!'
           this.error = error
@@ -72,8 +73,9 @@ export default {
       try {
         if (!this.$store.getters.watched.find((imdbid) => imdbid.imdbID === id)) {
           this.$store.state.watched.push(this.$store.state.currentMovie)
-          console.log(this.$store.getters.watched)
+          // console.log(this.$store.getters.watched)
           localStorage.setItem('watched', JSON.stringify(this.$store.state.watched))
+          this.$store.state.isOpen = false
         } else {
           const error = 'Item is already present in the list!'
           this.error = error
@@ -82,7 +84,7 @@ export default {
         throw new Error(err.message || 'error while adding to the list list')
       }
       this.$router.replace('/watched')
-      console.log('curentmovie', this.currentMovie)
+      // console.log('curentmovie', this.currentMovie)
     },
     handleClose() {
       this.error = null
@@ -94,6 +96,7 @@ export default {
 <style scoped>
 .movie-container {
   display: flex;
+  width: 100%;
 }
 .movie-desc h1 {
   font-size: 32px;
@@ -126,6 +129,13 @@ section h2 {
   }
   .movie-container {
     flex-direction: column;
+  }
+  .movie-desc {
+    margin-left: 0.3rem;
+  }
+  .buttons {
+    display: flex;
+    margin: 10px 0;
   }
 }
 </style>

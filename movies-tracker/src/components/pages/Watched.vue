@@ -1,6 +1,6 @@
 <template>
   <base-card>
-    <h1>Watched</h1>
+    <h1>Watched({{ fetchWatched.length }})</h1>
     <div class="container">
       <ul v-if="fetchWatched.length > 0">
         <li v-for="item in fetchWatched" :key="item.imdbID" @click="handleFetch(item.imdbID)">
@@ -18,7 +18,10 @@
           </div>
         </li>
       </ul>
-      <p v-else>please add some movies here!</p>
+      <p class="text" v-else>please add some movies here!</p>
+    </div>
+    <div v-if="fetchWatched.length > 0">
+      <base-button @click="handleEmpty" mode="empty">Empty Watched</base-button>
     </div>
   </base-card>
 </template>
@@ -34,6 +37,7 @@ export default {
       this.isLoading = true
       await this.$store.dispatch('fetchMovieWithId', { query: id, type: 'i' })
       this.isLoading = false
+      this.$store.state.isOpen = true
       // console.log('clicked the id :', id)
     },
     handleRemove(id) {
@@ -42,8 +46,15 @@ export default {
           (imdbid) => imdbid.imdbID !== id,
         )
         localStorage.setItem('watched', JSON.stringify(this.$store.state.watched))
-        console.log('watched', this.$store.getters.watched)
+        // console.log('watched', this.$store.getters.watched)
         this.$store.state.currentMovie = {}
+      }
+    },
+    handleEmpty() {
+      let response = confirm('are you sure you want to delete all items in watched?')
+      if (response === true) {
+        this.$store.state.watched = []
+        localStorage.setItem('watched', JSON.stringify(this.$store.state.watched))
       }
     },
   },
@@ -63,6 +74,9 @@ export default {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
   padding: 1rem;
 }
+/* .list-item P {
+  font-size: 18px;
+} */
 .movieposter {
   height: 80px;
   width: 80px;
@@ -79,7 +93,7 @@ li {
   list-style: none;
   cursor: pointer;
 }
-p {
+.text {
   padding: 1rem;
   font-size: 26px;
 }

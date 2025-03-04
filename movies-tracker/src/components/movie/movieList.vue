@@ -19,7 +19,9 @@
   </div>
 </template>
 <script>
+import movieItem from './movieItem.vue'
 export default {
+  components: { movieItem },
   computed: {
     movies() {
       return this.$store.state.movies
@@ -28,12 +30,20 @@ export default {
       return this.$store.getters.isLoading
     },
   },
+  // data() {
+  //   return {
+  //     isMobile: window.innerWidth < 500,
+  //     open: false,
+  //   }
+  // },
   methods: {
     async handleFetch(id) {
       try {
         this.$store.dispatch('setterIsLoading', true)
-        console.log('store', this.$store.getters.isLoading)
+        // console.log('store', this.$store.getters.isLoading)
         await this.$store.dispatch('fetchMovieWithId', { query: id, type: 'i' })
+        this.$store.state.isOpen = true
+        // this.open = true
       } catch (err) {
         const error = new Error(err.message || 'something went wrong while fetching')
         throw error
